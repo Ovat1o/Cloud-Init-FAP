@@ -1,0 +1,50 @@
+======================================================================
+RELATÓRIO DE EXECUÇÃO: USUÁRIO ADMINISTRADOR E ACESSO SSH
+======================================================================
+Data da verificação: 20/10/2026
+Usuário testado: meu-usuario
+Chave SSH gerada no Windows: ~/.ssh/id_ed25519 (OpenSSH Ed25519)
+Chave pública compartilhada no user-data:
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOSm+3Xl/gxSg16B9g61T/Hl9FVSOC80c9+LYpu8TX62 otavio@cloud-init
+
+----------------------------------------------------------------------
+1. IDENTIFICAÇÃO DO USUÁRIO NA VM (id meu-usuario)
+----------------------------------------------------------------------
+uid=1002(meu-usuario) gid=1002(meu-usuario) groups=1002(meu-usuario),27(sudo),120(docker)
+
+----------------------------------------------------------------------
+2. GRUPOS SUPLEMENTARES (groups meu-usuario)
+----------------------------------------------------------------------
+meu-usuario : meu-usuario sudo docker
+
+----------------------------------------------------------------------
+3. PRIVILÉGIOS ADMINISTRATIVOS SUDO (sudo -l -U meu-usuario)
+----------------------------------------------------------------------
+Matching Defaults entries for meu-usuario on servidor-devops:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin, use_pty
+
+User meu-usuario may run the following commands on servidor-devops:
+    (ALL : ALL) ALL
+    (ALL) NOPASSWD: ALL
+
+----------------------------------------------------------------------
+4. TESTE DE CONEXÃO SSH DIRETA A PARTIR DO WINDOWS
+Comando executado no Windows PowerShell:
+ssh -i "$HOME\.ssh\id_ed25519" -o StrictHostKeyChecking=no -p 2222 meu-usuario@127.0.0.1 "whoami; sudo whoami; docker ps"
+
+Saída:
+Warning: Permanently added '[127.0.0.1]:2222' (ED25519) to the list of known hosts.
+meu-usuario
+root
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+----------------------------------------------------------------------
+CONCLUSÃO:
+- O usuário 'meu-usuario' foi criado corretamente via Cloud-Init.
+- Pertence aos grupos 'sudo' e 'docker'.
+- Possui privilégios sudo totais sem senha (NOPASSWD: ALL).
+- Autenticação SSH realizada com sucesso a partir da chave pública ed25519,
+  mantendo a chave privada segura na máquina cliente Windows.
+- Permissão para operar o Docker sem necessidade de sudo confirmada.
+======================================================================
+

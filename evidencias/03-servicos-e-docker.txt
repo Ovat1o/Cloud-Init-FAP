@@ -1,0 +1,49 @@
+======================================================================
+RELATÓRIO DE EXECUÇÃO: SERVIÇOS DOCKER E NGINX
+======================================================================
+Data da verificação: 20/10/2026
+Servidor: servidor-devops
+
+----------------------------------------------------------------------
+1. STATUS DO SERVIÇO NGINX (systemctl status nginx --no-pager)
+----------------------------------------------------------------------
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2026-10-20 19:48:08 UTC; 4min 4s ago
+       Docs: man:nginx(8)
+   Main PID: 2725 (nginx)
+      Tasks: 2 (limit: 2307)
+     Memory: 4.7M
+        CPU: 55ms
+     CGroup: /system.slice/nginx.service
+             ├─2725 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
+             └─2730 "nginx: worker process"
+
+----------------------------------------------------------------------
+2. STATUS DO SERVIÇO DOCKER (systemctl status docker --no-pager)
+----------------------------------------------------------------------
+● docker.service - Docker Application Container Engine
+     Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2026-10-20 19:48:13 UTC; 3min 59s ago
+TriggeredBy: ● docker.socket
+       Docs: https://docs.docker.com
+   Main PID: 2472 (dockerd)
+      Tasks: 7
+     Memory: 25.0M
+        CPU: 815ms
+     CGroup: /system.slice/docker.service
+             └─2472 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+----------------------------------------------------------------------
+3. TESTE DE COMANDO DOCKER PELO USUÁRIO (docker ps)
+----------------------------------------------------------------------
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+----------------------------------------------------------------------
+CONCLUSÃO:
+- Nginx instalado via packages e habilitado em runcmd (`systemctl enable --now nginx`).
+- Docker instalado via packages e habilitado em runcmd (`systemctl enable --now docker`).
+- Ambos os serviços encontram-se 'enabled' e 'active (running)'.
+- Usuário 'meu-usuario' incluído no grupo 'docker' executa comandos do daemon sem sudo.
+======================================================================
+

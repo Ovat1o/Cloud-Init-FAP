@@ -1,0 +1,49 @@
+======================================================================
+RELATÓRIO DE EXECUÇÃO: PÁGINA WEB PERSONALIZADA
+======================================================================
+Data da verificação: 20/10/2026
+Destino: /var/www/html/index.html
+
+----------------------------------------------------------------------
+1. VERIFICAÇÃO DE ARQUIVO E PERMISSÕES NA VM (ls -la /var/www/html/index.html)
+----------------------------------------------------------------------
+-rw-r--r-- 1 www-data www-data 4765 Oct 20 19:47 /var/www/html/index.html
+
+Owner: www-data
+Group: www-data
+Permissões: 0644 (-rw-r--r--)
+
+----------------------------------------------------------------------
+2. REQUISIÇÃO HTTP LOCAL DENTRO DA VM (curl -sI http://localhost)
+----------------------------------------------------------------------
+HTTP/1.1 200 OK
+Server: nginx/1.18.0 (Ubuntu)
+Date: Tue, 20 Oct 2026 19:52:40 GMT
+Content-Type: text/html
+Content-Length: 4765
+Last-Modified: Tue, 20 Oct 2026 19:47:21 GMT
+Connection: keep-alive
+ETag: "6ad7c549-129d"
+Accept-Ranges: bytes
+
+----------------------------------------------------------------------
+3. ACESSO EXTERNO VIA WINDOWS HOST (PORTA FORWARDED DO VAGRANTFILE)
+Comando no Windows PowerShell:
+(Invoke-WebRequest -Uri "http://localhost:2200" -UseBasicParsing).StatusCode
+Resultado: 200 (OK)
+
+Porta mapeada pelo Vagrantfile com auto_correct:
+Porta original: 8080 (ocupada no host) -> Auto corrigida para: 2200
+
+4. ACESSO PELA REDE PRIVADA HOST-ONLY:
+(Invoke-WebRequest -Uri "http://192.168.56.10" -UseBasicParsing).StatusCode
+Resultado: 200 (OK)
+
+----------------------------------------------------------------------
+CONCLUSÃO:
+A página personalizada configurada na diretiva write_files do Cloud-Init
+foi criada no diretório correto com o proprietário www-data:www-data,
+e responde com status 200 OK tanto pela porta encaminhada quanto pela
+interface de rede privada.
+======================================================================
+
