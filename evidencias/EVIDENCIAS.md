@@ -1,62 +1,42 @@
 # Evidências da Atividade: Cloud-Init (DevOps)
 
-Validação realizada em 20 de outubro de 2026.
-
-## 1. Resumo do Provisionamento
-
-A infraestrutura foi automatizada utilizando o **Cloud-Init** com a fonte de metadados local `DataSourceNoCloud`. O arquivo `user-data` configurou:
-- Atualização do índice de repositórios do sistema (`package_update: true`);
-- Criação declarativa do usuário administrador `meu-usuario` com permissões `sudo` sem senha (`NOPASSWD: ALL`) e chave pública OpenSSH (`ed25519`);
-- Instalação dos pacotes essenciais `docker.io` e `nginx` pelo gerenciador APT;
-- Publicação de página HTML personalizada em `/var/www/html/index.html` com o módulo `write_files`;
-- Ativação imediata e habilitação no boot dos serviços Nginx e Docker via `runcmd`;
-- Inclusão do usuário `meu-usuario` no grupo `docker` via `runcmd`;
-- Emissão de mensagem conclusiva `final_message` nos logs do sistema.
+Evidências de validação do ambiente provisionado automaticamente com Cloud-Init e Vagrant.
 
 ---
 
-## 2. Status do Cloud-Init e Serviços
+## 1. Serviços Ativos, Usuário e Cloud-Init
 
-O Cloud-Init concluiu a execução com status `done` e sem nenhum erro. Os serviços Nginx e Docker estão ativos (`running`) e habilitados no systemd.
+Verificação da conclusão do Cloud-Init (`status: done`) e dos serviços **Nginx** e **Docker** ativos e habilitados:
 
-![Status dos Serviços e Cloud-Init](01-servicos-ativos.png)
+- `cloud-init status --long`
+- `systemctl status nginx`
+- `systemctl status docker`
+- `id meu-usuario`
 
-Os registros detalhados de logs podem ser conferidos em:
-- [01-cloud-init.txt](01-cloud-init.txt)
-- [03-servicos-e-docker.txt](03-servicos-e-docker.txt)
+![Serviços Ativos e Status do Cloud-Init](01-servicos-ativos.png)
 
 ---
 
-## 3. Usuário Administrador e Chave SSH
+## 2. Acesso SSH com Chave Pública e Permissões Administrativas
 
-A chave SSH do tipo `ed25519` foi gerada no Windows com o comando `ssh-keygen`:
-- **Chave Privada:** mantida com segurança em `%USERPROFILE%\.ssh\id_ed25519` (não exposta no repositório);
-- **Chave Pública:** declarada no campo `ssh_authorized_keys` do `user-data`.
+Acesso SSH realizado a partir do Windows usando o par de chaves OpenSSH Ed25519 (`id_ed25519`):
 
-A autenticação SSH via Windows PowerShell foi validada com sucesso:
+- **Autenticação:** Chave privada preservada no host cliente e chave pública injetada pelo Cloud-Init em `~/.ssh/authorized_keys`.
+- **Privilégios:** Usuário `meu-usuario` com permissão total via `sudo` sem necessidade de senha (`NOPASSWD: ALL`).
+- **Grupo Docker:** Usuário adicionado ao grupo `docker` via `runcmd`, permitindo executar containers sem `sudo`.
 
 ```powershell
-ssh -i "$HOME\.ssh\id_ed25519" -o StrictHostKeyChecking=no -p 2222 meu-usuario@127.0.0.1 "whoami; sudo whoami; docker ps"
+ssh -i "$HOME\.ssh\id_ed25519" -p 2222 meu-usuario@127.0.0.1 "whoami; sudo whoami; docker ps"
 ```
 
-Saída observada:
-```text
-meu-usuario
-root
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
-```
-
-O arquivo de evidências do usuário está em [02-usuario-e-ssh.txt](02-usuario-e-ssh.txt).
+![Usuário Administrador e Acesso SSH](02-usuario-ssh.png)
 
 ---
 
-## 4. Página Web Personalizada
+## 3. Página Web Personalizada em Execução
 
-A página HTML foi servida pelo Nginx a partir do caminho `/var/www/html/index.html`, possuindo permissões `0644` e proprietário `www-data:www-data`.
+Página HTML servida pelo **Nginx** a partir do diretório `/var/www/html/index.html` (criada através do módulo `write_files` do Cloud-Init):
 
-Como a porta `8080` do host já se encontrava ocupada por uma aplicação Java pré-existente no Windows, o mecanismo `auto_correct: true` do Vagrant encaminhou automaticamente o tráfego da porta guest `80` para a porta host `2200`. Além disso, a página está acessível pelo IP da rede privada `192.168.56.10`.
+![Página Web Personalizada](02-pagina-web.png)
 
-![Página Web Personalizada em Execução](02-pagina-web.png)
-
-A validação das requisições HTTP e headers está registrada em [04-validacao-web.txt](04-validacao-web.txt).
-
+*Acesso verificado pela porta encaminhada no Vagrantfile e pela interface de rede privada.*

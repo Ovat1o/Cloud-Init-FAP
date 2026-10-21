@@ -32,12 +32,9 @@ Cloud-Init/
 ├── user-data                 # Arquivo de configuração cloud-config
 ├── README.md                 # Documentação do projeto
 └── evidencias/               # Evidências e capturas de tela dos testes
-    ├── 01-cloud-init.txt
     ├── 01-servicos-ativos.png
+    ├── 02-usuario-ssh.png
     ├── 02-pagina-web.png
-    ├── 02-usuario-e-ssh.txt
-    ├── 03-servicos-e-docker.txt
-    ├── 04-validacao-web.txt
     └── EVIDENCIAS.md
 ```
 
